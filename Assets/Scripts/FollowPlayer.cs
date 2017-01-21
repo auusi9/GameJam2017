@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class FollowPlayer : MonoBehaviour {
@@ -22,14 +22,14 @@ public class FollowPlayer : MonoBehaviour {
 
         transform.position = player.transform.position - offset;
 
-        if(Input.GetKeyDown(KeyCode.Q))
+        if(Input.GetButtonDown("Camera Left"))
         {
             last_angle += 45.0f;
             transform.RotateAround(player.transform.position, Vector3.up, 45.0f);
             transform.LookAt(player.transform);
             offset = player.transform.position - transform.position;
         }
-        else if(Input.GetKeyDown(KeyCode.E))
+        else if(Input.GetButtonDown("Camera Right"))
         {
             last_angle -= 45.0f;
             transform.RotateAround(player.transform.position, Vector3.up, -45.0f);
