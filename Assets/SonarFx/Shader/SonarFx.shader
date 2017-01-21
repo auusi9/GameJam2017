@@ -49,37 +49,39 @@ Shader "Hidden/SonarFX"
         float4 _SonarWaveParams; // Amp, Exp, Interval, Speed
         float3 _SonarWaveVector;
         float3 _SonarAddColor;
+		float3 _OldSonarWaveVector;
 		float _CustomTime;
 		float _Distance;
+		float _oldDistance;
+		int _Length = 0;
+		int _ArrayStart = 0;
+		int _OldArrayStart = 0;
+		float _LinesArray[32];
+		float3 _AttenuateColor;
 
         void surf(Input IN, inout SurfaceOutput o)
         {
-//#ifdef SONAR_DIRECTIONAL
-//            float w = dot(IN.worldPos, _SonarWaveVector);
-//#else
-            float w = length(IN.worldPos - _SonarWaveVector);
-//#endif
+			o.Emission = _SonarBaseColor;
 
-			clip(_Distance - w);
+			float size = 0.025;
 
-            // Moving wave.
-            w -= _CustomTime * _SonarWaveParams.w;
+			for (int i = 0; i < _Length; i++)
+			{
+				float oW = length(IN.worldPos - _OldSonarWaveVector);
+				oW = lerp(0, oW, max(0, sign(_oldDistance - oW)));
+				float inDistance = (oW - _LinesArray[i]);
+				float same = (inDistance < size && inDistance > 0) ? 0 : 1;
+				// lerp(0, 1, max(max(0, sign(size - inDistance)), sign(inDistance));
+				o.Emission = lerp(_AttenuateColor, o.Emission, same);
+				
+				float w = length(IN.worldPos - _SonarWaveVector);
+				w = lerp(0, w, max(0, sign(_Distance - w)));
+				inDistance = (w - _LinesArray[i]);
+				same = (inDistance < size && inDistance > 0 ) ? 0 : 1;
+				o.Emission = lerp(_SonarWaveColor, o.Emission, same);
+			}
 
-            // Get modulo (w % params.z / params.z)
-            w /= _SonarWaveParams.z;
-            w = w - floor(w);
-
-            // Make the gradient steeper.
-            float p = _SonarWaveParams.y;
-            w = (pow(w, p) + pow(1 - w, p * 4)) * 0.5;
-
-            // Amplify.
-            w *= _SonarWaveParams.x;
-
-            // Apply to the surface.
-            o.Albedo = _SonarBaseColor;
 			
-            o.Emission = _SonarWaveColor * saturate(w);
         }
 
         ENDCG

@@ -5,10 +5,10 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 471788}
-  - 20: {fileID: 2055078}
+  - component: {fileID: 471788}
+  - component: {fileID: 2055078}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -21,17 +21,17 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 406478}
-  - 20: {fileID: 2025702}
-  - 92: {fileID: 9255906}
-  - 124: {fileID: 12452716}
-  - 81: {fileID: 8113940}
-  - 114: {fileID: 11436024}
-  - 114: {fileID: 11491928}
-  - 82: {fileID: 8269078}
-  - 114: {fileID: 11441986}
+  - component: {fileID: 406478}
+  - component: {fileID: 2025702}
+  - component: {fileID: 9255906}
+  - component: {fileID: 12452716}
+  - component: {fileID: 8113940}
+  - component: {fileID: 11436024}
+  - component: {fileID: 11491928}
+  - component: {fileID: 8269078}
+  - component: {fileID: 11441986}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -45,14 +45,14 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 171242}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.3387459, y: -0.45383582, z: 0.19179468, w: 0.8015604}
+  m_LocalPosition: {x: 5.598398, y: 6, z: -2.312501}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 471788}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 45.8186, y: -59.036297, z: 0}
 --- !u!4 &471788
 Transform:
   m_ObjectHideFlags: 1
@@ -62,10 +62,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 406478}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &2025702
 Camera:
   m_ObjectHideFlags: 1
@@ -157,6 +157,7 @@ AudioSource:
   Loop: 0
   Mute: 0
   Spatialize: 0
+  SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
@@ -169,12 +170,14 @@ AudioSource:
   rolloffCustomCurve:
     serializedVersion: 2
     m_Curve:
-    - time: 0
+    - serializedVersion: 2
+      time: 0
       value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
-    - time: 1
+    - serializedVersion: 2
+      time: 1
       value: 0
       inSlope: 0
       outSlope: 0
@@ -185,7 +188,8 @@ AudioSource:
   panLevelCustomCurve:
     serializedVersion: 2
     m_Curve:
-    - time: 0
+    - serializedVersion: 2
+      time: 0
       value: 0
       inSlope: 0
       outSlope: 0
@@ -196,7 +200,8 @@ AudioSource:
   spreadCustomCurve:
     serializedVersion: 2
     m_Curve:
-    - time: 0
+    - serializedVersion: 2
+      time: 0
       value: 0
       inSlope: 0
       outSlope: 0
@@ -207,7 +212,8 @@ AudioSource:
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
-    - time: 0
+    - serializedVersion: 2
+      time: 0
       value: 1
       inSlope: 0
       outSlope: 0
@@ -254,7 +260,11 @@ MonoBehaviour:
   disableOutputSound: 0
   src: {fileID: 8269078}
   masterMixer: {fileID: 24100000, guid: d9fa19cdde9aebe418dc507ba1808bf2, type: 2}
+  audioProfile: 0
   value: 0
+  _audioBandBuffer: []
+  _Amplitude: 0
+  _AmplitudeBuffer: 0
 --- !u!114 &11491928
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -266,20 +276,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c725fe963b534280bc779c2e7f23fb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mode: 0
+  _mode: 1
   _direction: {x: 0, y: 0, z: 1}
   _origin: {x: 0, y: 0, z: 0}
   _baseColor: {r: 0, g: 0, b: 0, a: 0}
   _waveColor: {r: 1, g: 0.2, b: 0.2, a: 0}
+  attenuatedColor: {r: 0.17647058, g: 0.040224906, b: 0.040224906, a: 0}
   _waveAmplitude: 6
   _waveExponent: 25
-  _waveInterval: 0.5
+  _waveInterval: 0.25
   _waveSpeed: 2
   _addColor: {r: 0, g: 0, b: 0, a: 1}
   shader: {fileID: 4800000, guid: 6d12e7ab487bf49d18b89038af741a18, type: 3}
-  distance: 0
-  player: {fileID: 0}
-  microphoneListener: {fileID: 11441986}
 --- !u!124 &12452716
 Behaviour:
   m_ObjectHideFlags: 1

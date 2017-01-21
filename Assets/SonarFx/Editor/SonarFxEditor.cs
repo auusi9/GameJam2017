@@ -55,37 +55,37 @@ public class SonarFxEditor : Editor
     {
         base.OnInspectorGUI();
 
-        serializedObject.Update();
+        //serializedObject.Update();
 
-        EditorGUILayout.PropertyField(propMode);
+        //EditorGUILayout.PropertyField(propMode);
 
-        EditorGUI.indentLevel++;
+        //EditorGUI.indentLevel++;
 
-        if (propMode.hasMultipleDifferentValues ||
-            propMode.enumValueIndex == (int)SonarFx.SonarMode.Directional)
-            EditorGUILayout.PropertyField(propDirection);
+        //if (propMode.hasMultipleDifferentValues ||
+        //    propMode.enumValueIndex == (int)SonarFx.SonarMode.Directional)
+        //    EditorGUILayout.PropertyField(propDirection);
 
-        if (propMode.hasMultipleDifferentValues ||
-            propMode.enumValueIndex == (int)SonarFx.SonarMode.Spherical)
-            EditorGUILayout.PropertyField(propOrigin);
+        //if (propMode.hasMultipleDifferentValues ||
+        //    propMode.enumValueIndex == (int)SonarFx.SonarMode.Spherical)
+        //    EditorGUILayout.PropertyField(propOrigin);
 
-        EditorGUI.indentLevel--;
+        //EditorGUI.indentLevel--;
 
-        EditorGUILayout.LabelField("Base Color");
-        EditorGUI.indentLevel++;
-        EditorGUILayout.PropertyField(propBaseColor, new GUIContent("Albedo"));
-        EditorGUILayout.PropertyField(propAddColor, new GUIContent("Emission"));
-        EditorGUI.indentLevel--;
+        //EditorGUILayout.LabelField("Base Color");
+        //EditorGUI.indentLevel++;
+        //EditorGUILayout.PropertyField(propBaseColor, new GUIContent("Albedo"));
+        //EditorGUILayout.PropertyField(propAddColor, new GUIContent("Emission"));
+        //EditorGUI.indentLevel--;
 
-        EditorGUILayout.LabelField("Wave Parameters");
-        EditorGUI.indentLevel++;
-        EditorGUILayout.PropertyField(propWaveColor, new GUIContent("Color"));
-        EditorGUILayout.PropertyField(propWaveAmplitude, new GUIContent("Amplitude"));
-        EditorGUILayout.PropertyField(propWaveExponent, new GUIContent("Exponent"));
-        EditorGUILayout.PropertyField(propWaveInterval, new GUIContent("Interval"));
-        EditorGUILayout.PropertyField(propWaveSpeed, new GUIContent("Speed"));
-        EditorGUI.indentLevel--;
+        //EditorGUILayout.LabelField("Wave Parameters");
+        //EditorGUI.indentLevel++;
+        //EditorGUILayout.PropertyField(propWaveColor, new GUIContent("Color"));
+        //EditorGUILayout.PropertyField(propWaveAmplitude, new GUIContent("Amplitude"));
+        //EditorGUILayout.PropertyField(propWaveExponent, new GUIContent("Exponent"));
+        //EditorGUILayout.PropertyField(propWaveInterval, new GUIContent("Interval"));
+        //EditorGUILayout.PropertyField(propWaveSpeed, new GUIContent("Speed"));
+        //EditorGUI.indentLevel--;
         
-        serializedObject.ApplyModifiedProperties();
+        //serializedObject.ApplyModifiedProperties();
     }
 }

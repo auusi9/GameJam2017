@@ -28,47 +28,64 @@ public class SonarFx : MonoBehaviour
 {
     // Sonar mode (directional or spherical)
     public enum SonarMode { Directional, Spherical }
-    [SerializeField] SonarMode _mode = SonarMode.Directional;
+    [SerializeField]
+    SonarMode _mode = SonarMode.Directional;
     public SonarMode mode { get { return _mode; } set { _mode = value; } }
 
     // Wave direction (used only in the directional mode)
-    [SerializeField] Vector3 _direction = Vector3.forward;
+    [SerializeField]
+    Vector3 _direction = Vector3.forward;
     public Vector3 direction { get { return _direction; } set { _direction = value; } }
 
     // Wave origin (used only in the spherical mode)
-    [SerializeField] Vector3 _origin = Vector3.zero;
+    [SerializeField]
+    Vector3 _origin = Vector3.zero;
     public Vector3 origin { get { return _origin; } set { _origin = value; } }
 
     // Base color (albedo)
-    [SerializeField] Color _baseColor = new Color(0.2f, 0.2f, 0.2f, 0);
+    [SerializeField]
+    Color _baseColor = new Color(0.2f, 0.2f, 0.2f, 0);
     public Color baseColor { get { return _baseColor; } set { _baseColor = value; } }
 
+
     // Wave color
-    [SerializeField] Color _waveColor = new Color(1.0f, 0.2f, 0.2f, 0);
+    [SerializeField]
+    Color _waveColor = new Color(1.0f, 0.2f, 0.2f, 0);
     public Color waveColor { get { return _waveColor; } set { _waveColor = value; } }
 
+    /// <summary>
+    /// Color que volem posar quan el soroll sigui atenuat
+    /// </summary>
+    public Color attenuatedColor;
+
     // Wave color amplitude
-    [SerializeField] float _waveAmplitude = 2.0f;
+    [SerializeField]
+    float _waveAmplitude = 2.0f;
     public float waveAmplitude { get { return _waveAmplitude; } set { _waveAmplitude = value; } }
 
     // Exponent for wave color
-    [SerializeField] float _waveExponent = 22.0f;
+    [SerializeField]
+    float _waveExponent = 22.0f;
     public float waveExponent { get { return _waveExponent; } set { _waveExponent = value; } }
 
     // Interval between waves
-    [SerializeField] float _waveInterval = 20.0f;
+    [SerializeField]
+    float _waveInterval = 20.0f;
     public float waveInterval { get { return _waveInterval; } set { _waveInterval = value; } }
 
     // Wave speed
-    [SerializeField] float _waveSpeed = 10.0f;
+    [SerializeField]
+    float _waveSpeed = 10.0f;
     public float waveSpeed { get { return _waveSpeed; } set { _waveSpeed = value; } }
 
     // Additional color (emission)
-    [SerializeField] Color _addColor = Color.black;
+    [SerializeField]
+    Color _addColor = Color.black;
     public Color addColor { get { return _addColor; } set { _addColor = value; } }
 
     // Reference to the shader.
-    [SerializeField] Shader shader;
+    [SerializeField]
+    Shader shader;
 
     // Private shader variables
     int baseColorID;
@@ -76,18 +93,7 @@ public class SonarFx : MonoBehaviour
     int waveParamsID;
     int waveVectorID;
     int addColorID;
-
-    float customTime = 0;
-
-    public float distance = 0;
-
-    private float defaultDistance = 2;
-
-    public Transform player;
-
-    public MicrophoneListener microphoneListener;
-
-    private float lastTimeUp;
+    private int attenuatedColorID;
 
     void Awake()
     {
@@ -96,6 +102,7 @@ public class SonarFx : MonoBehaviour
         waveParamsID = Shader.PropertyToID("_SonarWaveParams");
         waveVectorID = Shader.PropertyToID("_SonarWaveVector");
         addColorID = Shader.PropertyToID("_SonarAddColor");
+        attenuatedColorID = Shader.PropertyToID("_AttenuateColor");
     }
 
     void OnEnable()
@@ -111,57 +118,13 @@ public class SonarFx : MonoBehaviour
 
     void Update()
     {
+        Shader.SetGlobalColor(attenuatedColorID, attenuatedColor);
         Shader.SetGlobalColor(baseColorID, _baseColor);
         Shader.SetGlobalColor(waveColorID, _waveColor);
         Shader.SetGlobalColor(addColorID, _addColor);
 
-        customTime += Time.deltaTime / 5;
-        float desiredDistance;
-        desiredDistance = microphoneListener.value * 100;
-        
-        if(distance < desiredDistance)
-        {
-            distance = Mathf.Lerp(distance, desiredDistance, Time.deltaTime / 10);
-            lastTimeUp = Time.time;
-        }
-        else
-        {
-            customTime -= Time.deltaTime / 5;
-
-            if(lastTimeUp + 1 < Time.time)
-            {
-                distance = Mathf.Lerp(distance, desiredDistance, Time.deltaTime);
-            }
-        }
-
-        Shader.SetGlobalFloat("_Distance", distance);
-        Shader.SetGlobalFloat("_CustomTime", customTime);
-
         var param = new Vector4(_waveAmplitude, _waveExponent, _waveInterval, _waveSpeed);
         Shader.SetGlobalVector(waveParamsID, param);
-
-        
-
-        if (_mode == SonarMode.Directional)
-        {
-            Shader.DisableKeyword("SONAR_SPHERICAL");
-            Shader.SetGlobalVector(waveVectorID, _direction.normalized);
-        }
-        else
-        {
-            Shader.EnableKeyword("SONAR_SPHERICAL");
-            Shader.SetGlobalVector(waveVectorID, player.position);
-        }
-    }
-
-    private float AddSound(float volume)
-    {
-        customTime += Time.deltaTime / 5;
-        return defaultDistance * volume;
-    }
-
-    void OnDrawGizmos()
-    {
-        Debug.DrawRay(player.position, Vector3.right * distance, Color.blue);
+        Shader.EnableKeyword("SONAR_SPHERICAL");
     }
 }
