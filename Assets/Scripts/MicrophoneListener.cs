@@ -37,9 +37,7 @@ public class MicrophoneListener : MonoBehaviour
 
     float timeSinceRestart = 0;
 
-    public GameObject ball;
-
-
+    public float value;
 
 
     void Start()
@@ -89,9 +87,7 @@ public class MicrophoneListener : MonoBehaviour
         }
 
         //value = .5f + Mathf.Sqrt((value) / 256) * 100;
-        Debug.Log(value);
-
-        ball.transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(value, value, value), Time.deltaTime);
+        this.value = value;
     }
 
 
