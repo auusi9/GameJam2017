@@ -52,7 +52,7 @@ public class SurvivorsManager : MonoBehaviour {
                 case State.flee:
                     {
                         Debug.Log("FLEEEEEEEEEEEEEEEEEEEEEE");
-                        if (Detection(survivors[i].game_object,10) == false)
+                        if (Detection(survivors[i].game_object,15) == false)
                         {
                             ChangeState(survivors[i], State.wander);
                             
@@ -65,7 +65,7 @@ public class SurvivorsManager : MonoBehaviour {
 
     bool Detection(GameObject game_object,int dist)
     {
-        if (Vector3.Distance(game_object.transform.position, player.transform.position) <= dist)
+        if (Mathf.Abs(Vector3.Distance(game_object.transform.position, player.transform.position) ) <= dist)
         {
             return(true);
         }

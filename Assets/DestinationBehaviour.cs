@@ -16,7 +16,6 @@ public class DestinationBehaviour : MonoBehaviour {
 	// Use this for initialization
 	void OnEnable () {
         agent = GetComponent<NavMeshAgent>();
-        agent.speed = 2;
         Wander();
 	}
 	
