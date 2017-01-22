@@ -167,7 +167,7 @@ public class MicrophoneListener : MonoBehaviour
     }
 
     //puts the mic into the audiosource
-    void MicrophoneIntoAudioSource(bool MicrophoneListenerOn)
+    IEnumerator MicrophoneIntoAudioSource(bool MicrophoneListenerOn)
     {
 
         if (MicrophoneListenerOn)
@@ -181,6 +181,7 @@ public class MicrophoneListener : MonoBehaviour
                 //wait until microphone position is found (?)
                 while (!(Microphone.GetPosition(null) > 0))
                 {
+                    yield return null;
                 }
 
                 src.Play(); // Play the audio source

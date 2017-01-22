@@ -40,11 +40,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e474e542791040544932d5bae6fc1c66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minDistance: 1
+  minDistance: 0.2
   maxDistance: 8
   microphoneListener: {fileID: 0}
   distance: 0
   player: {fileID: 0}
+  footDistance: 0
+  firstStep: 1
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
