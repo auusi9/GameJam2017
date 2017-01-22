@@ -171,10 +171,10 @@ public class SurvivorsManager : MonoBehaviour
         {
             if (Detection(survivors[i].game_object, dis) == true)
             {
+                Debug.Log("IM HERE");
                 survivors[i].game_object.GetComponent<Animator>().SetBool("Die", true);
                 Debug.Log("I:" + i);
                 if (survivors[i] != survivors[transform.childCount-1])
-                    
                     survivors[i] = survivors[i + 1];
             }
         }
