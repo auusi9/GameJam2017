@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
         m_TurnAmount = Mathf.Atan2(move.x, move.z);
         m_ForwardAmount = move.z;
 
-
+        
 
         ApplyExtraTurnRotation();        
 

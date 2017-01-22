@@ -19,6 +19,7 @@ public class SurvivorsManager : MonoBehaviour
     private Transform player;
     public float radius = 1.0f;
     int survivors_inFlee = 0;
+    public static SurvivorsManager singleton;
     class Survivor
     {
         public State state = State.wander;
@@ -31,7 +32,19 @@ public class SurvivorsManager : MonoBehaviour
     }
     Survivor[] survivors;
     // Use this for initialization
-    void Start()
+    private void Awake()
+    {
+        if (singleton != null)
+        {
+            Debug.LogWarning("Trying to add more than one SceneManager");
+            Destroy(this);
+        }
+        else
+        {
+            singleton = this;
+        }
+    }
+        void Start()
     {
         player = SceneManager.current.player;
 
@@ -56,12 +69,13 @@ public class SurvivorsManager : MonoBehaviour
                         if (survivors[j + 1] != null)
                             survivors[j] = survivors[j + 1];
                     }
-                else {
+                else
+                {
                     switch (survivors[i].state)
                     {
                         case State.wander:
                             {
-                                if (Detection(survivors[i].game_object, 3) == true)
+                                if (Detection(survivors[i].game_object, SceneManager.current.GetLastWaveDistance()) == true)
                                 {
                                     ChangeState(survivors[i], State.flee);
                                 }
@@ -69,7 +83,7 @@ public class SurvivorsManager : MonoBehaviour
                             break;
                         case State.flee:
                             {
-                                if (Detection(survivors[i].game_object, 15) == false)
+                                if (Detection(survivors[i].game_object, 15f) == false)
                                 {
                                     ChangeState(survivors[i], State.wander);
                                 }
@@ -78,7 +92,7 @@ public class SurvivorsManager : MonoBehaviour
                             break;
                         case State.follow:
                             {
-                                Debug.Log("FOLLOWING");
+                                //Debug.Log("FOLLOWING");
                                 if (survivors[i].AlphaSurvivor != null)
                                 {
                                     Vector3 point = Random.insideUnitSphere;
@@ -90,7 +104,7 @@ public class SurvivorsManager : MonoBehaviour
                                         ChangeState(survivors[i], State.wander);
                                     }
                                 }
-                                if (Detection(survivors[i].game_object, 3) == true)
+                                if (Detection(survivors[i].game_object, SceneManager.current.GetLastWaveDistance()) == true)
                                 {
                                     ChangeState(survivors[i], State.flee);
                                 }
@@ -121,6 +135,7 @@ public class SurvivorsManager : MonoBehaviour
                                 ChangeState(survivors[j], State.follow);
                                 ChangeState(survivors[i], State.follow);
                                 Debug.Log("IM HEREE");
+                                
                             }
                         }
                     }
@@ -130,8 +145,10 @@ public class SurvivorsManager : MonoBehaviour
         }
         else
             counter_strike += Time.deltaTime;
+        if (transform.childCount == 0)
+            Debug.Log("YOU WIN BABY");
 
-        if (survivors_inFlee == 0 && Time.time > 60)
+        if (survivors_inFlee == 0 && Time.time > Random.Range(60*5,60*10))
         {
             Debug.Log("All the survivors have scaped");
         }
@@ -139,7 +156,7 @@ public class SurvivorsManager : MonoBehaviour
 
     }
 
-    bool Detection(GameObject game_object, int dist)
+    bool Detection(GameObject game_object, float dist)
     {
         if (Mathf.Abs(Vector3.Distance(game_object.transform.position, player.transform.position)) <= dist)
         {
@@ -148,7 +165,21 @@ public class SurvivorsManager : MonoBehaviour
         else
             return (false);
     }
+    public void DetectOnAttack(float dis)
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            if (Detection(survivors[i].game_object, dis) == true)
+            {
+                survivors[i].game_object.GetComponent<Animator>().SetBool("Die", true);
+                Debug.Log("I:" + i);
+                if (survivors[i] != survivors[transform.childCount-1])
+                    
+                    survivors[i] = survivors[i + 1];
+            }
+        }
 
+    }
     void ChangeState(Survivor survivor, State state)
     {
         if (state == survivor.state)
