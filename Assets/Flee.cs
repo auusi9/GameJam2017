@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -9,7 +9,7 @@ public class Flee : MonoBehaviour
     float angle = 0.0f;
     Vector3 target = Vector3.zero;
     NavMeshAgent agent;
-    public GameObject player;
+    private Transform player;
     float speed = 0;
     float counter;
     // Use this for initialization
@@ -19,6 +19,11 @@ public class Flee : MonoBehaviour
         speed = agent.speed;
         agent.speed = 10;
         Fleee();
+    }
+
+    void Start()
+    {
+        player = SceneManager.current.player;
     }
 
     // Update is called once per frame
