@@ -11,12 +11,14 @@ public class SurvivorsManager : MonoBehaviour
         wander,
         idle,
         follow,
-        flee
+        flee,
+        die
     }
 
     float counter_strike = 0;
     private Transform player;
     public float radius = 1.0f;
+    int survivors_inFlee = 0;
     class Survivor
     {
         public State state = State.wander;
@@ -39,7 +41,7 @@ public class SurvivorsManager : MonoBehaviour
             survivors[i] = new Survivor(transform.GetChild(i).gameObject);
         }
     }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -48,45 +50,58 @@ public class SurvivorsManager : MonoBehaviour
         {
             for (int i = 0; i < transform.childCount; i++)
             {
-
-                switch (survivors[i].state)
-                {
-                    case State.wander:
+                if (survivors[i].game_object == null)
+                    for (int j = i; j < transform.childCount; j++)
+                    {
+                        if(survivors[j +1] != null)
+                        survivors[j] = survivors[j + 1];
+                    }
+                else { 
+                        switch (survivors[i].state)
                         {
-                            if (Detection(survivors[i].game_object, 3) == true)
-                            {
-                                ChangeState(survivors[i], State.flee);
-                            }
-                        }
-                        break;
-                    case State.flee:
-                        {
-                            if (Detection(survivors[i].game_object, 15) == false)
-                            {
-                                ChangeState(survivors[i], State.wander);
-                            }
-                        }
-                        break;
-                    case State.follow:
-                        {
-                            Debug.Log("FOLLOWING");
-                            if (survivors[i].AlphaSurvivor != null)
-                            {
-                                Vector3 point = Random.insideUnitSphere;
-                                point *= radius;
-                                survivors[i].game_object.GetComponent<NavMeshAgent>().destination = survivors[i].AlphaSurvivor.GetComponent<NavMeshAgent>().destination + point;
-
-                                if (Vector3.Distance(survivors[i].AlphaSurvivor.transform.position, survivors[i].game_object.transform.position) > 5)
+                            case State.wander:
                                 {
-                                    ChangeState(survivors[i], State.wander);
+                                    if (Detection(survivors[i].game_object, 3) == true)
+                                    {
+                                        ChangeState(survivors[i], State.flee);
+                                    }
                                 }
-                            }
-                            if (Detection(survivors[i].game_object, 3) == true)
-                            {
-                                ChangeState(survivors[i], State.flee);
-                            }
-                        }
-                        break;
+                                break;
+                            case State.flee:
+                                {
+                                    if (Detection(survivors[i].game_object, 15) == false)
+                                    {
+                                        ChangeState(survivors[i], State.wander);
+                                    }
+                                    survivors_inFlee++;
+                                }
+                                break;
+                            case State.follow:
+                                {
+                                    Debug.Log("FOLLOWING");
+                                    if (survivors[i].AlphaSurvivor != null)
+                                    {
+                                        Vector3 point = Random.insideUnitSphere;
+                                        point *= radius;
+                                        survivors[i].game_object.GetComponent<NavMeshAgent>().destination = survivors[i].AlphaSurvivor.GetComponent<NavMeshAgent>().destination + point;
+
+                                        if (Vector3.Distance(survivors[i].AlphaSurvivor.transform.position, survivors[i].game_object.transform.position) > 5)
+                                        {
+                                            ChangeState(survivors[i], State.wander);
+                                        }
+                                    }
+                                    if (Detection(survivors[i].game_object, 3) == true)
+                                    {
+                                        ChangeState(survivors[i], State.flee);
+                                    }
+                                }
+                                break;
+                            case State.die:
+                                {
+                                survivors[i].game_object.GetComponent<NavMeshAgent>().destination = survivors[i].game_object.transform.position;
+                                }
+                                break;
+                    }   
                 }
 
                 if (survivors[i].state != State.follow && survivors[i].state != State.flee)
@@ -115,6 +130,13 @@ public class SurvivorsManager : MonoBehaviour
         }
         else
             counter_strike += Time.deltaTime;
+
+        if (survivors_inFlee == 0 && Time.time > 60)
+        {
+            Debug.Log("All the survivors have scaped");
+        }
+        survivors_inFlee = 0;
+
     }
 
     bool Detection(GameObject game_object, int dist)
