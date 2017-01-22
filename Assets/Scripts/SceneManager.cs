@@ -151,14 +151,14 @@ public class SceneManager : MonoBehaviour
             {
                 wavesInfo[i].distance = Mathf.SmoothStep(wavesInfo[i].distance, wavesInfo[i].finalDistance, Time.deltaTime * 10);
             }
-            else if(wavesInfo[i].timeInDistance < .1f)
+            else if(wavesInfo[i].timeInDistance < .4f)
             {
                 wavesInfo[i].timeInDistance += Time.deltaTime;
             }
             else
             {
                 wavesInfo[i].finalDistance = 0; // Fem reset per a que no entri al primer if
-                wavesInfo[i].distance = Mathf.SmoothStep(wavesInfo[i].distance, 0, Time.deltaTime * 10);
+                wavesInfo[i].distance = Mathf.SmoothStep(wavesInfo[i].distance, 0, Time.deltaTime * 5);
             }
 
             distances[i] = wavesInfo[i].distance;
