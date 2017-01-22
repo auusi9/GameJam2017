@@ -19,7 +19,8 @@ public class SurvivorsManager : MonoBehaviour
     public float radius = 1.0f;
     int survivors_inFlee = 0;
     public static SurvivorsManager singleton;
-    
+    public GameObject textWin;
+    public GameObject textLose;
     Survivor[] survivors;
     // Use this for initialization
     private void Awake()
@@ -137,16 +138,24 @@ public class SurvivorsManager : MonoBehaviour
         else
             counter_strike += Time.deltaTime;
         if (transform.childCount == 0)
-            Debug.Log("YOU WIN BABY");
-
-        if (survivors_inFlee == 0 && Time.time > Random.Range(60*5,60*10))
         {
-            Debug.Log("All the survivors have scaped");
+            textWin.SetActive(true);
+            Invoke("LoadScene", 4);
+        }
+
+        if (survivors_inFlee == 0 && Time.timeSinceLevelLoad > Random.Range(60*5, 60 * 10))
+        {
+            textLose.SetActive(true);
+            Invoke("LoadScene", 4);
+            Debug.Log("All the survivors have escaped");
         }
         survivors_inFlee = 0;
 
     }
-
+    void LoadScene()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+    }
     bool Detection(GameObject game_object, float dist)
     {
         if (Mathf.Abs(Vector3.Distance(game_object.transform.position, player.transform.position)) <= dist)
@@ -240,6 +249,7 @@ public class Survivor
 
     public Survivor(GameObject game_object)
     {
+        alive = true;
         this.game_object = game_object;
     }
 }

@@ -38,7 +38,7 @@ public class StepWave : MonoBehaviour
         {
             yield return null;
         }
-
+        Debug.Log("He trobat el survivor");
         while (survivor.alive)
         {
             if (navMeshAgent.speed < runningSpeed && navMeshAgent.speed > walkignSpeed)
