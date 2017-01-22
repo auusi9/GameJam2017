@@ -12,21 +12,23 @@ public class SineWave : MonoBehaviour {
     public float index;
     public ParticleSystem particles;
     ParticleSystem.EmissionModule em;
-
+    int enemies = 0;
 	// Use this for initialization
 	void Start () {
         em = particles.emission;
         new_omegaY = omegaY;
-	}
+        enemies = SurvivorsManager.singleton.transform.childCount;
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
         index += Time.deltaTime;
 
-        if(Input.GetKeyDown(KeyCode.K))
-        {
-            new_omegaY = new_omegaY + 2;
-        }
+        int i = enemies - SurvivorsManager.singleton.transform.childCount;
+    
+        new_omegaY = omegaY + 2*i;
+       
 
         if(index >= Mathf.PI)
         {
