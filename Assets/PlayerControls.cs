@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityEngine;
 
@@ -11,14 +11,17 @@ public class PlayerControls : MonoBehaviour {
     private Vector3 m_Move;
     private bool m_Jump;
     public float speed = 0.0f;
-    Animator animator;    
+    Animator animator;
+    new Rigidbody rigidbody;
 
 	// Use this for initialization
 	void Start () {
         m_Cam = Camera.main.transform;
         m_Character = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
-	}
+        rigidbody = GetComponent<Rigidbody>();
+
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
@@ -29,7 +32,7 @@ public class PlayerControls : MonoBehaviour {
         if (Input.GetKey(KeyCode.P) || CrossPlatformInputManager.GetButtonDown("Fire1"))
         {
             animator.SetBool("Attacking", true);
-            GetComponent<Rigidbody>().velocity = Vector3.zero;
+            rigidbody.velocity = Vector3.zero;
             
         }
         if (animator.GetBool("Attacking") == false)
@@ -39,8 +42,10 @@ public class PlayerControls : MonoBehaviour {
             m_Move = v * m_CamForward + h * m_Cam.right;
             m_Move *= speed;
             // walk speed multiplier
-            if (Input.GetKey(KeyCode.LeftShift)) m_Move *= 4;
-            GetComponent<Rigidbody>().velocity = m_Move;
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetAxisRaw("Right Trigger") != 0)
+                m_Move *= 4;
+
+            rigidbody.velocity = m_Move;
         }
        else
         {
