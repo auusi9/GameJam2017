@@ -10,6 +10,10 @@ public class SceneManager : MonoBehaviour
     /// </summary>
     public const int ArraySize = 64;
 
+    public const float TimeBetweenAudioWaves = 1f;
+
+    public const float AudioValueThreshold = 0.02f;
+
     /// <summary>
     /// Distancia minima a la que sempre produim soroll
     /// </summary>
@@ -83,6 +87,8 @@ public class SceneManager : MonoBehaviour
 
     private int currentWave = 0;
 
+    private float lastWaveTime = 0;
+
     private void Awake()
     {
         if(current != null)
@@ -111,6 +117,12 @@ public class SceneManager : MonoBehaviour
 
     private void Update()
     {
+        if(microphoneListener.value > AudioValueThreshold && lastWaveTime + TimeBetweenAudioWaves < Time.time)
+        {
+            lastWaveTime = Time.time;
+            AddWave(player.position);
+        }
+
         float desiredDistance = microphoneListener._AmplitudeBuffer;
         desiredDistance = Mathf.Max(desiredDistance, minDistance);
         desiredDistance = Mathf.Min(desiredDistance, maxDistance);
