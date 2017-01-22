@@ -9,33 +9,60 @@ public class StepWave : MonoBehaviour
 
     public const float walkignSpeed = 1.5f;
 
-    public const float runningWave = 2f;
+    public const float runningWave = 1f;
 
-    public const float walkingWave = 1f;
+    public const float walkingWave = .75f;
 
     public NavMeshAgent navMeshAgent;
 
-    private WaitForSeconds waitForSecondsRunning = new WaitForSeconds(.5f);
+    public Survivor survivor;
 
-    private WaitForSeconds waitForSecondsWalking = new WaitForSeconds(.75f);
+    private WaitForSeconds waitForSecondsRunning = new WaitForSeconds(.6f);
+
+    private WaitForSeconds waitForSecondsWalking = new WaitForSeconds(.6f);
+
+    private int id;
+
+    private bool firstStep;
 
     void Start()
     {
+        id = SceneManager.current.AssignSurvivorIndex();
+
         StartCoroutine(ShowWave());
     }
 
     private IEnumerator ShowWave()
     {
-        while (true)
+        while(survivor == null)
+        {
+            yield return null;
+        }
+
+        while (survivor.alive)
         {
             if (navMeshAgent.speed < runningSpeed && navMeshAgent.speed > walkignSpeed)
             {
-                //SceneManager.current.AddWave(transform.position, walkingWave);
+                int position = (SceneManager.NumWaves - 1) - (id * 2);
+                if (!firstStep)
+                {
+                    position -= 1;
+                }
+
+                SceneManager.current.AddWave(transform.position, walkingWave, position);
+                firstStep = !firstStep;
                 yield return waitForSecondsWalking;
             }
             else if (navMeshAgent.speed > runningSpeed)
             {
-                //SceneManager.current.AddWave(transform.position, runningWave);
+                int position = (SceneManager.NumWaves - 1) - (id * 2);
+                if (!firstStep)
+                {
+                    position -= 1;
+                }
+
+                SceneManager.current.AddWave(transform.position, runningWave, position);
+                firstStep = !firstStep;
                 yield return waitForSecondsRunning;
             }
 

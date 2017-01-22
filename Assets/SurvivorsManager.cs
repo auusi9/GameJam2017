@@ -5,8 +5,7 @@ using UnityEngine.AI;
 
 public class SurvivorsManager : MonoBehaviour
 {
-
-    enum State
+    public enum State
     {
         wander,
         idle,
@@ -20,16 +19,7 @@ public class SurvivorsManager : MonoBehaviour
     public float radius = 1.0f;
     int survivors_inFlee = 0;
     public static SurvivorsManager singleton;
-    class Survivor
-    {
-        public State state = State.wander;
-        public GameObject game_object;
-        public GameObject AlphaSurvivor = null;
-        public Survivor(GameObject game_object)
-        {
-            this.game_object = game_object;
-        }
-    }
+    
     Survivor[] survivors;
     // Use this for initialization
     private void Awake()
@@ -52,6 +42,7 @@ public class SurvivorsManager : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++)
         {
             survivors[i] = new Survivor(transform.GetChild(i).gameObject);
+            transform.GetChild(i).GetComponent<StepWave>().survivor = survivors[i];
         }
     }
 
@@ -171,6 +162,7 @@ public class SurvivorsManager : MonoBehaviour
         {
             if (Detection(survivors[i].game_object, dis) == true)
             {
+                survivors[i].alive = false;
                 Debug.Log("IM HERE");
                 survivors[i].game_object.GetComponent<Animator>().SetBool("Die", true);
                 Debug.Log("I:" + i);
@@ -236,5 +228,18 @@ public class SurvivorsManager : MonoBehaviour
 
             survivor.state = State.follow;
         }
+    }
+}
+
+public class Survivor
+{
+    public SurvivorsManager.State state = SurvivorsManager.State.wander;
+    public GameObject game_object;
+    public GameObject AlphaSurvivor = null;
+    public bool alive = true;
+
+    public Survivor(GameObject game_object)
+    {
+        this.game_object = game_object;
     }
 }

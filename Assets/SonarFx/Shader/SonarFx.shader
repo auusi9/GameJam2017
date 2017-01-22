@@ -67,7 +67,7 @@ Shader "Hidden/SonarFX"
 
 			for (int i = 0; i < _Length; i++)
 			{
-				for (int j = 31; j >= 0; j--)
+				for (int j = 15; j >= 0; j--)
 				{
 					// ACTUAL
 					w = length(IN.worldPos - _StartPositions[j]);

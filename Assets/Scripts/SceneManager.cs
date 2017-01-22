@@ -11,7 +11,7 @@ public class SceneManager : MonoBehaviour
     /// </summary>
     public const int ArraySize = 32;
 
-    public const int NumWaves = 64;
+    public const int NumWaves = 16;
 
     public const float TimeBetweenAudioWaves = 1f;
 
@@ -53,6 +53,8 @@ public class SceneManager : MonoBehaviour
     /// Si es el primer pas o el segon que anem fent
     /// </summary>
     public bool firstStep = true;
+
+    private int survivorIndex = 0;
 
     /// <summary>
     /// Nom del vector del centre de la posicio al shader
@@ -189,12 +191,16 @@ public class SceneManager : MonoBehaviour
     /// <summary>
     /// Afegim una nova wave. Descartem la mes vella i actualitzem el punter a l'actual
     /// </summary>
-    public void AddWave(Vector3 position, float finalDistance = 0)
+    public void AddWave(Vector3 position, float finalDistance = 0, int inArrayPosition = -1)
     {
-        if(Vector3.Distance(position, player.position) < 15)
+        if(inArrayPosition == -1)
         {
-            currentWave = (++currentWave) % wavesInfo.Length;
+            currentWave = (++currentWave) % (wavesInfo.Length / 2);
             wavesInfo[currentWave].Reset(position, finalDistance);
+        }
+        else
+        {
+            wavesInfo[inArrayPosition].Reset(position, finalDistance);
         }
     }
 
@@ -227,6 +233,13 @@ public class SceneManager : MonoBehaviour
 
         Shader.SetGlobalFloatArray(linesArrayID, array);
         Shader.SetGlobalInt(lenghtID, i);
+    }
+
+    public int AssignSurvivorIndex()
+    {
+        survivorIndex++;
+
+        return survivorIndex - 1;
     }
 
     //void OnDrawGizmos()
