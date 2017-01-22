@@ -198,6 +198,11 @@ public class SceneManager : MonoBehaviour
         }
     }
 
+    public float GetLastWaveDistance()
+    {
+        return wavesInfo[currentWave].distance;
+    }
+
     private void CalculatePoints()
     {
         WaitForSeconds waitForSeconds = new WaitForSeconds(1f);

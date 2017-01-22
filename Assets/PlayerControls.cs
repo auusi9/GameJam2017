@@ -26,10 +26,11 @@ public class PlayerControls : MonoBehaviour {
         float h = CrossPlatformInputManager.GetAxis("Horizontal");
         float v = CrossPlatformInputManager.GetAxis("Vertical");
 
-        if (Input.GetKey(KeyCode.R))
+        if (Input.GetKey(KeyCode.P) || CrossPlatformInputManager.GetButtonDown("Fire1"))
         {
             animator.SetBool("Attacking", true);
             GetComponent<Rigidbody>().velocity = Vector3.zero;
+            
         }
         if (animator.GetBool("Attacking") == false)
         {
@@ -41,7 +42,12 @@ public class PlayerControls : MonoBehaviour {
             if (Input.GetKey(KeyCode.LeftShift)) m_Move *= 4;
             GetComponent<Rigidbody>().velocity = m_Move;
         }
-       
+       else
+        {
+            Debug.DrawLine(transform.position, SceneManager.current.GetLastWaveDistance() * Vector3.forward, Color.yellow);
+            float a = SceneManager.current.GetLastWaveDistance();
+            SurvivorsManager.singleton.DetectOnAttack(a);
+        }
 
         
 
