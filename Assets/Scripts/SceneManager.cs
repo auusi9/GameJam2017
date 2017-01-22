@@ -3,10 +3,12 @@ using System.Collections;
 
 public class SceneManager : MonoBehaviour
 {
+    public static SceneManager current;
+    
     /// <summary>
     /// Mida del Array que passem al shader (ha de ser el mateix que al shader)
     /// </summary>
-    public const int ArraySize = 32;
+    public const int ArraySize = 64;
 
     /// <summary>
     /// Distancia minima a la que sempre produim soroll
@@ -28,10 +30,7 @@ public class SceneManager : MonoBehaviour
     /// </summary>
     public float distance;
 
-    /// <summary>
-    /// Distancia a la que pintem el soroll anterior
-    /// </summary>
-    public float lastDistance;
+    public float[] distances;
 
     /// <summary>
     /// Transform del player
@@ -78,39 +77,94 @@ public class SceneManager : MonoBehaviour
     /// </summary>
     private int oldDistanceID;
 
-    void Awake()
+    private Vector4[] positions;
+
+    private WaveInfo[] wavesInfo;
+
+    private int currentWave = 0;
+
+    private void Awake()
     {
+        if(current != null)
+        {
+            Debug.LogWarning("Trying to add more than one SceneManager");
+            Destroy(this);
+        }
+        else
+        {
+            current = this;
+        }
+
+        wavesInfo = new WaveInfo[4];
+        distances = new float[4];
+        positions = new Vector4[4];
+
         waveVectorID = Shader.PropertyToID("_SonarWaveVector");
         oldWaveVectorID = Shader.PropertyToID("_OldSonarWaveVector");
         linesArrayID = Shader.PropertyToID("_LinesArray");
         lenghtID = Shader.PropertyToID("_Length");
         distanceID = Shader.PropertyToID("_Distance");
         oldDistanceID = Shader.PropertyToID("_oldDistance");
+
+        CalculatePoints();
     }
 
-
-    // Use this for initialization
-    void Start()
+    private void Update()
     {
-        StartCoroutine(CalculatePoints());
-    }
-
-    void Update()
-    {
-        float desiredDistance = microphoneListener.value;
+        float desiredDistance = microphoneListener._AmplitudeBuffer;
         desiredDistance = Mathf.Max(desiredDistance, minDistance);
         desiredDistance = Mathf.Min(desiredDistance, maxDistance);
 
-        distance = Mathf.SmoothStep(distance, desiredDistance, Time.deltaTime * 5);
-        Shader.SetGlobalFloat(distanceID, distance);
+        for(int i = 0; i < wavesInfo.Length; i++)
+        {
+            // Mirem si la final distance de la wave actual es menor que la desiredDistance i si ho es la incrementem
+            if (i == currentWave)
+            {
+                if(!wavesInfo[i].forcedFinalDistance && !wavesInfo[i].distanceFixed && wavesInfo[i].finalDistance < desiredDistance)
+                {
+                    wavesInfo[i].finalDistance = desiredDistance;
+                }
+                else
+                {
+                    wavesInfo[i].distanceFixed = true;
+                }
+            }
 
-        lastDistance = Mathf.SmoothStep(lastDistance, 0, Time.deltaTime);
-        Shader.SetGlobalFloat(oldDistanceID, lastDistance);
+            if (wavesInfo[i].distance < wavesInfo[i].finalDistance)
+            {
+                wavesInfo[i].distance = Mathf.SmoothStep(wavesInfo[i].distance, wavesInfo[i].finalDistance, Time.deltaTime * 10);
+            }
+            else if(wavesInfo[i].timeInDistance < .2f)
+            {
+                wavesInfo[i].timeInDistance += Time.deltaTime;
+            }
+            else
+            {
+                wavesInfo[i].finalDistance = 0; // Fem reset per a que no entri al primer if
+                wavesInfo[i].distance = Mathf.SmoothStep(wavesInfo[i].distance, 0, Time.deltaTime);
+            }
+
+            distances[i] = wavesInfo[i].distance;
+            positions[i] = wavesInfo[i].position;
+        }
+
+        Shader.SetGlobalInt("_CurrentWave", currentWave);
+        Shader.SetGlobalFloatArray("_Distances", distances);
+        Shader.SetGlobalVectorArray("_StartPositions", positions);
     }
 
-    private IEnumerator CalculatePoints()
+    /// <summary>
+    /// Afegim una nova wave. Descartem la mes vella i actualitzem el punter a l'actual
+    /// </summary>
+    public void AddWave(Vector3 position, float finalDistance = 0)
     {
-        WaitForSeconds waitForSeconds = new WaitForSeconds(.5f);
+        currentWave = (++currentWave) % wavesInfo.Length;
+        wavesInfo[currentWave].Reset(position, finalDistance);
+    }
+
+    private void CalculatePoints()
+    {
+        WaitForSeconds waitForSeconds = new WaitForSeconds(1f);
         float[] array = new float[ArraySize];
         Vector3 lastPlayerPosition = player.position;
 
@@ -119,37 +173,47 @@ public class SceneManager : MonoBehaviour
             array[i] = Mathf.Pow(i / 16f, 2) + Mathf.Pow(i / 16f, 4);
         }
 
-        for(int i = 0; i < ArraySize; i++)
+        for(int i = 0; i < positions.Length; i++)
         {
-            Debug.Log(array[i]);
+            positions[0] = player.position;
         }
 
         Shader.SetGlobalFloatArray(linesArrayID, array);
         Shader.SetGlobalInt(lenghtID, ArraySize);
-
-        while (true)
-        {
-            if(firstStep)
-            {
-                Shader.SetGlobalVector(waveVectorID, player.position + player.right * footDistance);
-                Shader.SetGlobalVector(oldWaveVectorID, lastPlayerPosition - player.right * footDistance);
-            }
-            else
-            {
-                Shader.SetGlobalVector(waveVectorID, player.position - player.right * footDistance);
-                Shader.SetGlobalVector(oldWaveVectorID, lastPlayerPosition + player.right * footDistance);
-            }
-
-            lastPlayerPosition = player.position;
-            lastDistance = distance;
-            firstStep = !firstStep;
-
-            yield return waitForSeconds;
-        }
     }
 
     //void OnDrawGizmos()
     //{
     //    Debug.DrawRay(player.position, Vector3.right * distance, Color.blue);
     //}
+
+    public struct WaveInfo
+    {
+        public bool distanceFixed;
+
+        public Vector4 position;
+
+        public float distance;
+
+        public float finalDistance;
+
+        public bool forcedFinalDistance;
+
+        public float timeInDistance;
+
+        public void Reset(Vector4 pos, float fDistance = 0f)
+        {
+            position = pos;
+
+            distanceFixed = false;
+
+            distance = 0;
+
+            finalDistance = fDistance;
+
+            forcedFinalDistance = !Mathf.Approximately(0, fDistance);
+
+            timeInDistance = 0;
+        }
+    }
 }

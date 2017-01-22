@@ -262,7 +262,15 @@ MonoBehaviour:
   masterMixer: {fileID: 24100000, guid: d9fa19cdde9aebe418dc507ba1808bf2, type: 2}
   audioProfile: 0
   value: 0
-  _audioBandBuffer: []
+  _audioBandBuffer:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
   _Amplitude: 0
   _AmplitudeBuffer: 0
 --- !u!114 &11491928
