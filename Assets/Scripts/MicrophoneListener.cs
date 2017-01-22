@@ -148,7 +148,7 @@ public class MicrophoneListener : MonoBehaviour
             volume = -80.0f;
         }
 
-        masterMixer.SetFloat("MasterVolume", volume);
+        masterMixer.SetFloat("Volume", volume);
     }
 
 
