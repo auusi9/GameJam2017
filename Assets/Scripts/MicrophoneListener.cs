@@ -81,22 +81,37 @@ public class MicrophoneListener : MonoBehaviour
         //can choose to unmute sound from inspector if desired
         DisableSound(!disableOutputSound);
 
-        float[] spectrum = new float[256];
+        float[] spectrum = new float[1024];
         float value = 0;
 
         AudioListener.GetOutputData(spectrum, 0);
 
-        for (int i = 1; i < spectrum.Length - 1; i++)
+        for (int i = 0; i < spectrum.Length; i++)
         {
             value += spectrum[i] * spectrum[i];
-            //Debug.DrawLine(new Vector3(i - 1, spectrum[i] + 10, 0), new Vector3(i, spectrum[i + 1] + 10, 0), Color.red);
-            //Debug.DrawLine(new Vector3(i - 1, Mathf.Log(spectrum[i - 1]) + 10, 2), new Vector3(i, Mathf.Log(spectrum[i]) + 10, 2), Color.cyan);
-            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), spectrum[i - 1] - 10, 1), new Vector3(Mathf.Log(i), spectrum[i] - 10, 1), Color.green);
-            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), Mathf.Log(spectrum[i - 1]), 3), new Vector3(Mathf.Log(i), Mathf.Log(spectrum[i]), 3), Color.blue);
         }
 
-        //value = .5f + Mathf.Sqrt((value) / 256) * 100;
-        this.value = value;
+        float rmsValue = Mathf.Sqrt(value / 1024);
+        rmsValue = rmsValue * 500;
+        //Debug.Log(rmsValue.ToString());
+        this.value = rmsValue;
+        //float dbValue = 20 * Mathf.Log10(rmsValue / 0.1f);
+        //if (dbValue < -160)
+        //{
+        //    dbValue = -160;
+        //}
+        ////dbValue -= 48;
+        ////if(dbValue < 0)
+        ////{
+        ////    dbValue = 0;
+        ////}
+        //dbValue += 25;
+        //if(dbValue < 0)
+        //{
+        //    dbValue = 0;
+        //}
+        //this.value = dbValue;
+
         GetSpectrumAudioSource();
         MakeFrequencyBand();
         BandBuffer();
@@ -148,7 +163,7 @@ public class MicrophoneListener : MonoBehaviour
             volume = -80.0f;
         }
 
-        masterMixer.SetFloat("Volume", volume);
+        //masterMixer.SetFloat("MasterVolume", volume);
     }
 
 
@@ -169,20 +184,16 @@ public class MicrophoneListener : MonoBehaviour
     //puts the mic into the audiosource
     void MicrophoneIntoAudioSource(bool MicrophoneListenerOn)
     {
-
         if (MicrophoneListenerOn)
         {
             //pause a little before setting clip to avoid lag and bugginess
-            if (Time.time - timeSinceRestart > 0.5f && !Microphone.IsRecording(null))
+            if (Time.time - timeSinceRestart > 0.1f && !Microphone.IsRecording(null))
             {
                 src.clip = Microphone.Start(null, true, 10, 44100);
                 Invoke("RestartMicrophoneListenerCustom", 10.05f);
 
-                //wait until microphone position is found (?)
-                //while (!(Microphone.GetPosition(null) > 0))
-                //{
-                //    yield return null;
-                //}
+                // wait until microphone position is found (?)
+                while (!(Microphone.GetPosition(null) > 0)) { }
 
                 src.Play(); // Play the audio source
             }

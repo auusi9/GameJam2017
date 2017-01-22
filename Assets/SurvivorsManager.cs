@@ -69,7 +69,7 @@ public class SurvivorsManager : MonoBehaviour
                         break;
                     case State.follow:
                         {
-                            Debug.Log("FOLLOWING");
+                            //Debug.Log("FOLLOWING");
                             if (survivors[i].AlphaSurvivor != null)
                             {
                                 Vector3 point = Random.insideUnitSphere;

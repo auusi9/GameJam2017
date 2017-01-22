@@ -50,10 +50,10 @@ Shader "Hidden/SonarFX"
 		float3 _OldSonarWaveVector;
 		float _CustomTime;
 		int _Length = 0;
-		float _LinesArray[64];
+		float _LinesArray[32];
 		float3 _AttenuateColor;
-		float4 _StartPositions[4];
-		float _Distances[4];
+		float4 _StartPositions[32];
+		float _Distances[32];
 		int _CurrentWave;
 
         void surf(Input IN, inout SurfaceOutput o)
@@ -67,7 +67,7 @@ Shader "Hidden/SonarFX"
 
 			for (int i = 0; i < _Length; i++)
 			{
-				for (int j = 3; j >= 0; j--)
+				for (int j = 31; j >= 0; j--)
 				{
 					// ACTUAL
 					w = length(IN.worldPos - _StartPositions[j]);

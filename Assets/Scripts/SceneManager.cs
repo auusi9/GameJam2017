@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections;
+using UnityEngine.Audio;
 using System;
 
 public class SceneManager : MonoBehaviour
@@ -9,13 +9,13 @@ public class SceneManager : MonoBehaviour
     /// <summary>
     /// Mida del Array que passem al shader (ha de ser el mateix que al shader)
     /// </summary>
-    public const int ArraySize = 64;
+    public const int ArraySize = 32;
 
-    public const int NumWaves = 4;
+    public const int NumWaves = 64;
 
     public const float TimeBetweenAudioWaves = 1f;
 
-    public const float AudioValueThreshold = 0.02f;
+    public const float AudioValueThreshold = 0.5f;
 
     /// <summary>
     /// Distancia minima a la que sempre produim soroll
@@ -46,6 +46,8 @@ public class SceneManager : MonoBehaviour
     /// Distancia del peu al centre del player
     /// </summary>
     public float footDistance = 0.25f;
+
+    public AudioMixer masterMixer;
 
     /// <summary>
     /// Si es el primer pas o el segon que anem fent
@@ -120,7 +122,7 @@ public class SceneManager : MonoBehaviour
 
     private void Update()
     {
-        if(microphoneListener.value > AudioValueThreshold && lastWaveTime + TimeBetweenAudioWaves < Time.time)
+        if (microphoneListener._AmplitudeBuffer > AudioValueThreshold && lastWaveTime + TimeBetweenAudioWaves < Time.time)
         {
             lastWaveTime = Time.time;
             AddWave(player.position);
@@ -189,8 +191,11 @@ public class SceneManager : MonoBehaviour
     /// </summary>
     public void AddWave(Vector3 position, float finalDistance = 0)
     {
-        currentWave = (++currentWave) % wavesInfo.Length;
-        wavesInfo[currentWave].Reset(position, finalDistance);
+        if(Vector3.Distance(position, player.position) < 15)
+        {
+            currentWave = (++currentWave) % wavesInfo.Length;
+            wavesInfo[currentWave].Reset(position, finalDistance);
+        }
     }
 
     private void CalculatePoints()
@@ -199,18 +204,24 @@ public class SceneManager : MonoBehaviour
         float[] array = new float[ArraySize];
         Vector3 lastPlayerPosition = player.position;
 
-        for (int i = 0; i < ArraySize; i++)
+        int i;
+        for (i = 0; i < ArraySize; i++)
         {
-            array[i] = Mathf.Pow(i / 16f, 2) + Mathf.Pow(i / 16f, 4);
+            array[i] = Mathf.Pow((i + 8) / 16f, 2) + Mathf.Pow((i + 8) / 16f, 4);
+
+            if(array[i] > maxDistance)
+            {
+                break;
+            }
         }
 
-        for(int i = 0; i < positions.Length; i++)
+        for(int j = 0; j < positions.Length; j++)
         {
-            positions[0] = player.position;
+            positions[j] = player.position;
         }
 
         Shader.SetGlobalFloatArray(linesArrayID, array);
-        Shader.SetGlobalInt(lenghtID, ArraySize);
+        Shader.SetGlobalInt(lenghtID, i);
     }
 
     //void OnDrawGizmos()
