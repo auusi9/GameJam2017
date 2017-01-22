@@ -15,12 +15,12 @@ public class IA_Animation : MonoBehaviour
         anim = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         // Don’t update position automatically
-        agent.updatePosition = false;
+        agent.updatePosition = true;
     }
 
     void Update()
     {
-        Vector3 worldDeltaPosition = agent.nextPosition - transform.position;
+        Vector3 worldDeltaPosition = agent.destination - transform.position;
 
         // Map 'worldDeltaPosition' to local space
         float dx = Vector3.Dot(transform.right, worldDeltaPosition);
@@ -34,6 +34,7 @@ public class IA_Animation : MonoBehaviour
         float m_TurnAmount = Mathf.Atan2(smoothDeltaPosition.x, smoothDeltaPosition.y);
         float m_ForwardAmount = smoothDeltaPosition.y;
         // Update animation parameters
+        
         anim.SetFloat("Forward", m_ForwardAmount);
         anim.SetFloat("Turn", m_TurnAmount);
     }

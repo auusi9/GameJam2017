@@ -12,7 +12,7 @@ public class DestinationBehaviour : MonoBehaviour {
     public float max_update = 0.0f;
     NavMeshAgent agent;
     float timer_strike = 0.0f;
-
+    public bool following = false;
 	// Use this for initialization
 	void OnEnable () {
         agent = GetComponent<NavMeshAgent>();
@@ -21,13 +21,18 @@ public class DestinationBehaviour : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if(timer_strike > 5)
-        {
-            Wander();
-            timer_strike = 0;
+        if(following == false)
+        { 
+            if(timer_strike > 5)
+            {
+                Wander();
+                timer_strike = 0;
+            }
         }
 
         timer_strike += Time.deltaTime;
+
+        Debug.DrawLine(transform.position, agent.destination, Color.yellow);
 	}
 
     void Wander()
@@ -37,5 +42,9 @@ public class DestinationBehaviour : MonoBehaviour {
         point_wander += transform.position;
 
         agent.destination = point_wander;
+    }
+    public void SetFollowing(bool a)
+    {
+        following = a;
     }
 }
