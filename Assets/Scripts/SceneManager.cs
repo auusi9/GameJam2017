@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class SceneManager : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class SceneManager : MonoBehaviour
     /// Mida del Array que passem al shader (ha de ser el mateix que al shader)
     /// </summary>
     public const int ArraySize = 64;
+
+    public const int NumWaves = 4;
 
     public const float TimeBetweenAudioWaves = 1f;
 
@@ -33,8 +36,6 @@ public class SceneManager : MonoBehaviour
     /// Distancia actual a la que "pintem"
     /// </summary>
     public float distance;
-
-    public float[] distances;
 
     /// <summary>
     /// Transform del player
@@ -83,6 +84,8 @@ public class SceneManager : MonoBehaviour
 
     private Vector4[] positions;
 
+    private float[] distances;
+
     private WaveInfo[] wavesInfo;
 
     private int currentWave = 0;
@@ -101,9 +104,9 @@ public class SceneManager : MonoBehaviour
             current = this;
         }
 
-        wavesInfo = new WaveInfo[4];
-        distances = new float[4];
-        positions = new Vector4[4];
+        wavesInfo = new WaveInfo[NumWaves];
+        distances = new float[NumWaves];
+        positions = new Vector4[NumWaves];
 
         waveVectorID = Shader.PropertyToID("_SonarWaveVector");
         oldWaveVectorID = Shader.PropertyToID("_OldSonarWaveVector");
@@ -132,37 +135,53 @@ public class SceneManager : MonoBehaviour
             // Mirem si la final distance de la wave actual es menor que la desiredDistance i si ho es la incrementem
             if (i == currentWave)
             {
-                if(!wavesInfo[i].forcedFinalDistance && !wavesInfo[i].distanceFixed && wavesInfo[i].finalDistance < desiredDistance)
+                if(!wavesInfo[i].finalDistanceFixed && wavesInfo[i].finalDistance < desiredDistance)
                 {
                     wavesInfo[i].finalDistance = desiredDistance;
                 }
                 else
                 {
-                    wavesInfo[i].distanceFixed = true;
+                    wavesInfo[i].finalDistanceFixed = true;
                 }
             }
 
-            if (wavesInfo[i].distance < wavesInfo[i].finalDistance)
+            if (wavesInfo[i].distance < wavesInfo[i].finalDistance && !Mathf.Approximately(wavesInfo[i].distance, wavesInfo[i].finalDistance))
             {
                 wavesInfo[i].distance = Mathf.SmoothStep(wavesInfo[i].distance, wavesInfo[i].finalDistance, Time.deltaTime * 10);
             }
-            else if(wavesInfo[i].timeInDistance < .2f)
+            else if(wavesInfo[i].timeInDistance < .1f)
             {
                 wavesInfo[i].timeInDistance += Time.deltaTime;
             }
             else
             {
                 wavesInfo[i].finalDistance = 0; // Fem reset per a que no entri al primer if
-                wavesInfo[i].distance = Mathf.SmoothStep(wavesInfo[i].distance, 0, Time.deltaTime);
+                wavesInfo[i].distance = Mathf.SmoothStep(wavesInfo[i].distance, 0, Time.deltaTime * 10);
             }
 
             distances[i] = wavesInfo[i].distance;
             positions[i] = wavesInfo[i].position;
         }
 
+        MoveWithinArray(distances, currentWave, 0);
+        MoveWithinArray(positions, currentWave, 0);
+
         Shader.SetGlobalInt("_CurrentWave", currentWave);
         Shader.SetGlobalFloatArray("_Distances", distances);
         Shader.SetGlobalVectorArray("_StartPositions", positions);
+    }
+
+    /// <summary>
+    /// Funcio treta de stackoverflow per a canviar de posicio elements de l'array
+    /// </summary>
+    /// <param name="array">L'array al que li volem canviar els valors</param>
+    /// <param name="source">Posicio a la que esta ara</param>
+    /// <param name="dest">Posicio a la que ho volem moure</param>
+    private void MoveWithinArray(Array array, int source, int dest)
+    {
+        System.Object temp = array.GetValue(source);
+        Array.Copy(array, dest, array, dest + 1, source - dest);
+        array.SetValue(temp, dest);
     }
 
     /// <summary>
@@ -199,31 +218,45 @@ public class SceneManager : MonoBehaviour
     //    Debug.DrawRay(player.position, Vector3.right * distance, Color.blue);
     //}
 
+    /// <summary>
+    /// Struct per a guardar info de les waves que hem de dibuixar al shader
+    /// </summary>
     public struct WaveInfo
     {
-        public bool distanceFixed;
+        /// <summary>
+        /// S'hi s'ha fixat ja la distancia final
+        /// </summary>
+        public bool finalDistanceFixed;
 
+        /// <summary>
+        /// Posicio on s'ha de crear la wae
+        /// </summary>
         public Vector4 position;
 
+        /// <summary>
+        /// Distancia actual de la wave
+        /// </summary>
         public float distance;
 
+        /// <summary>
+        /// Distancia final / maxima que tindra la wave
+        /// </summary>
         public float finalDistance;
 
-        public bool forcedFinalDistance;
-
+        /// <summary>
+        /// Temps que passa a la distancia final abans de decreixer
+        /// </summary>
         public float timeInDistance;
 
         public void Reset(Vector4 pos, float fDistance = 0f)
         {
             position = pos;
 
-            distanceFixed = false;
+            finalDistanceFixed = !Mathf.Approximately(0, fDistance);
 
             distance = 0;
 
             finalDistance = fDistance;
-
-            forcedFinalDistance = !Mathf.Approximately(0, fDistance);
 
             timeInDistance = 0;
         }

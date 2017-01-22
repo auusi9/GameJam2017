@@ -149,7 +149,8 @@ AudioSource:
   m_GameObject: {fileID: 171242}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24381058, guid: d9fa19cdde9aebe418dc507ba1808bf2,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -208,7 +209,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -288,8 +289,8 @@ MonoBehaviour:
   _direction: {x: 0, y: 0, z: 1}
   _origin: {x: 0, y: 0, z: 0}
   _baseColor: {r: 0, g: 0, b: 0, a: 0}
-  _waveColor: {r: 1, g: 0.2, b: 0.2, a: 0}
-  attenuatedColor: {r: 0.17647058, g: 0.040224906, b: 0.040224906, a: 0}
+  _waveColor: {r: 0.071551725, g: 0.6102941, b: 0, a: 0}
+  attenuatedColor: {r: 0.07672551, g: 0.3602941, b: 0.039738316, a: 0}
   _waveAmplitude: 6
   _waveExponent: 25
   _waveInterval: 0.25

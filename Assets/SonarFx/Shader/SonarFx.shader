@@ -67,7 +67,7 @@ Shader "Hidden/SonarFX"
 
 			for (int i = 0; i < _Length; i++)
 			{
-				for (int j = 0; j < 4; j++)
+				for (int j = 3; j >= 0; j--)
 				{
 					// ACTUAL
 					w = length(IN.worldPos - _StartPositions[j]);
@@ -75,8 +75,7 @@ Shader "Hidden/SonarFX"
 					inDistance = (w - _LinesArray[i]);
 					same = (inDistance < size && inDistance > 0) ? 0 : 1;
 					// lerp(0, 1, max(max(0, sign(size - inDistance)), sign(inDistance));
-					
-					o.Emission = lerp(lerp(_SonarWaveColor, _AttenuateColor, abs(sign(_CurrentWave - j))), o.Emission, same);
+					o.Emission = lerp(lerp(_SonarWaveColor, _AttenuateColor, sign(j)), o.Emission, same);
 				}
 				
 				
