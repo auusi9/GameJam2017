@@ -95,6 +95,10 @@ public class SonarFx : MonoBehaviour
     int addColorID;
     private int attenuatedColorID;
 
+    bool usingCustomShader = true;
+
+    private Camera camera;
+
     void Awake()
     {
         baseColorID = Shader.PropertyToID("_SonarBaseColor");
@@ -107,17 +111,32 @@ public class SonarFx : MonoBehaviour
 
     void OnEnable()
     {
-        GetComponent<Camera>().SetReplacementShader(shader, null);
+        camera = GetComponent<Camera>();
+        camera.SetReplacementShader(shader, null);
         Update();
     }
 
     void OnDisable()
     {
-        GetComponent<Camera>().ResetReplacementShader();
+        camera.ResetReplacementShader();
     }
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if(usingCustomShader)
+            {
+                camera.ResetReplacementShader();
+            }
+            else
+            {
+                camera.SetReplacementShader(shader, null);
+            }
+            usingCustomShader = !usingCustomShader;
+        }
+
+
         Shader.SetGlobalColor(attenuatedColorID, attenuatedColor);
         Shader.SetGlobalColor(baseColorID, _baseColor);
         Shader.SetGlobalColor(waveColorID, _waveColor);
