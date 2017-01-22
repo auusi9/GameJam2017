@@ -741,9 +741,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4432460171504314}
-  - component: {fileID: 54073011032047868}
   - component: {fileID: 95687444941999298}
-  - component: {fileID: 136995021817204622}
   - component: {fileID: 195310413747325456}
   - component: {fileID: 114103958775637588}
   - component: {fileID: 114328014264744372}
@@ -1844,7 +1842,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1564180735507976}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.508, z: -0.21}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4821276270180356}
@@ -2484,21 +2482,6 @@ Transform:
   m_Father: {fileID: 4442245114212754}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &54073011032047868
-Rigidbody:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1564180735507976}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!95 &95687444941999298
 Animator:
   serializedVersion: 3
@@ -2553,19 +2536,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 256da85d538e6364a89e767bf613bd40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!136 &136995021817204622
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1564180735507976}
-  m_Material: {fileID: 13400000, guid: c2815a7ab32e42c4bb42f59caacb8ec1, type: 2}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.3
-  m_Height: 1.6
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!137 &137237105116236870
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
